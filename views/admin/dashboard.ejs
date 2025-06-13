@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IRecipes - Admin Dashboard</title>
+    <%- include("../partials/css-links.ejs") %>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+      :root {
+        --accent-color: #ff69b4;  /* Hot pink */
+        --nav-hover-color: #2c3e50;  /* Dark blue */
+        --surface-color: #f8f9fa;  /* Light blue-grey */
+        --heading-color: #2c3e50;  /* Dark blue */
+      }
+      body {
+        background: linear-gradient(120deg, var(--background-color, #fff) 0%, var(--surface-color, #f8f9fa) 100%);
+        min-height: 100vh;
+      }
+      .dashboard-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .admin-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 16px rgba(44, 62, 80, 0.15);
+        border: 3px solid var(--accent-color);
+        background: #fff;
+      }
+      .welcome-title {
+        font-size: 2.2rem;
+        font-family: var(--heading-font);
+        background: linear-gradient(90deg, var(--accent-color), var(--nav-hover-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+      }
+      .welcome-sub {
+        color: var(--nav-hover-color);
+        font-size: 1.1rem;
+        font-family: var(--default-font);
+      }
+      .glass-card {
+        background: var(--surface-color);
+        box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.10);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.18);
+        transition: box-shadow 0.3s, transform 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .glass-card:hover {
+        box-shadow: 0 16px 40px 0 var(--accent-color);
+        transform: translateY(-6px) scale(1.03);
+      }
+      .stats-icon {
+        font-size: 2.5rem;
+        color: var(--accent-color);
+        background: rgba(44, 62, 80, 0.10);
+        border-radius: 50%;
+        padding: 0.7rem;
+        margin-bottom: 0.7rem;
+        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+      }
+      .stats-title {
+        font-size: 1.1rem;
+        color: var(--heading-color);
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+      .stats-value {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        letter-spacing: 1px;
+      }
+      .donut-card {
+        background: var(--surface-color);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.10);
+        padding: 2rem 1.5rem;
+        margin-top: 2rem;
+      }
+      @media (max-width: 768px) {
+        .dashboard-header { flex-direction: column; align-items: flex-start; }
+        .stats-row { flex-direction: column; }
+        .glass-card { margin-bottom: 1.5rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <%- include("../partials/nav.ejs", { user: typeof user !== 'undefined' ? user : null }) %>
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <%- include('./partials/sidebar') %>
+        
+        <!-- Main Content -->
+        <div class="col py-3">
+          <div class="container">
+            <h2 class="mb-4">Dashboard Overview</h2>
+            
+            <!-- Stats Cards -->
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card glass-card">
+                  <div class="card-body text-center">
+                    <div class="stats-icon"><i class="bi bi-journal-text"></i></div>
+                    <div class="stats-title">Total Recipes</div>
+                    <div class="stats-value"><%= totalRecipes || 0 %></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card glass-card">
+                  <div class="card-body text-center">
+                    <div class="stats-icon"><i class="bi bi-people"></i></div>
+                    <div class="stats-title">Total Users</div>
+                    <div class="stats-value"><%= totalUsers || 0 %></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="card donut-card">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Recipes vs Users</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="donutChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include("../partials/footer.ejs") %>
+    <%- include("../partials/js-scripts.ejs") %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('donutChart').getContext('2d');
+      const donutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Recipes', 'Users'],
+          datasets: [{
+            data: [<%= totalRecipes %>, <%= totalUsers %>],
+            backgroundColor: [
+              '#ff69b4', // hot pink
+              '#2c3e50'  // dark blue
+            ],
+            borderColor: [
+              '#ff69b4',
+              '#2c3e50'
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
