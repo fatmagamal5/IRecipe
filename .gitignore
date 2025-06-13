@@ -1,0 +1,4 @@
+.cursor/
+.vscode/
+node_modules/
+*.log
