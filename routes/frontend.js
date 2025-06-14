@@ -69,6 +69,30 @@ router.get("/recipe-details/:id", async (req, res) => {
   }
 });
 
+// User profile
+router.get("/profile", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(res.locals.user._id).populate({
+      path: 'favorites',
+      populate: {
+        path: 'author',
+        select: 'name'
+      }
+    });
+
+    // Get user's recipes
+    const recipes = await Recipes.find({ author: user._id });
+
+    res.render("user/profile", { 
+      user,
+      recipes 
+    });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).render("error", { error: "Failed to load profile" });
+  }
+});
+
 
 // Handle /recipes/admin access
 router.get('/recipes/admin', (req, res) => {
