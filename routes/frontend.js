@@ -8,6 +8,7 @@ import Review from '../models/review.js';
 
 const router = express.Router();
 
+// Redirect /user to homepage
 router.get("/user", (req, res) => {
   res.redirect("/");
 });
@@ -17,28 +18,24 @@ router.get("/", (req, res) => {
   try {
     res.render("index");
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load homepage" });
+    res.status(500).render("error", {
+      error: "Failed to load homepage",
+      message: err.message || "An error occurred",
+      status: 500
+    });
   }
 });
 
 // About us
 router.get("/about-us", async (req, res) => {
   try {
-    // Get total number of users
     const totalUsers = await User.countDocuments();
-    
-    // Get total number of recipes
     const totalRecipes = await Recipes.countDocuments();
-    
-    // Get total number of recipe categories
     const categories = await Recipes.distinct('category');
     const totalCategories = categories.length;
-    
-    // Get total number of favorites across all users
     const usersWithFavorites = await User.find({ favorites: { $exists: true, $ne: [] } });
     const totalFavorites = usersWithFavorites.reduce((sum, user) => sum + user.favorites.length, 0);
 
-    // Get approved reviews with populated user and recipe data
     const reviews = await Review.find({ isApproved: true })
       .populate({
         path: 'user',
@@ -51,8 +48,6 @@ router.get("/about-us", async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(6);
 
-    console.log('Fetched reviews:', reviews); // Debug log
-
     res.render("about-us", {
       stats: {
         users: totalUsers,
@@ -64,7 +59,11 @@ router.get("/about-us", async (req, res) => {
     });
   } catch (err) {
     console.error("About us error:", err);
-    res.status(500).render("error", { error: "Failed to load About Us page" });
+    res.status(500).render("error", {
+      error: "Failed to load About Us page",
+      message: err.message || "Something went wrong",
+      status: 500
+    });
   }
 });
 
@@ -73,7 +72,11 @@ router.get("/contact-us", (req, res) => {
   try {
     res.render("contact-us");
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load Contact Us page" });
+    res.status(500).render("error", {
+      error: "Failed to load Contact Us page",
+      message: err.message || "Something went wrong",
+      status: 500
+    });
   }
 });
 
@@ -81,7 +84,7 @@ router.get("/contact-us", (req, res) => {
 router.get("/recipes", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 9; // 9 recipes per page
+    const limit = 9;
     const skip = (page - 1) * limit;
 
     const totalRecipes = await Recipes.countDocuments();
@@ -92,7 +95,7 @@ router.get("/recipes", async (req, res) => {
       .limit(limit)
       .sort({ createdAt: -1 });
 
-    res.render("recipes", { 
+    res.render("recipes", {
       recipes,
       currentPage: page,
       totalPages,
@@ -100,7 +103,11 @@ router.get("/recipes", async (req, res) => {
       hasPrevPage: page > 1
     });
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load recipes" });
+    res.status(500).render("error", {
+      error: "Failed to load recipes",
+      message: err.message || "Something went wrong",
+      status: 500
+    });
   }
 });
 
@@ -109,11 +116,19 @@ router.get("/recipe-details/:id", async (req, res) => {
   try {
     const recipe = await Recipes.findById(req.params.id).populate("author");
     if (!recipe) {
-      return res.status(404).render("error", { error: "Recipe not found" });
+      return res.status(404).render("error", {
+        error: "Recipe not found",
+        message: "The recipe you are looking for does not exist.",
+        status: 404
+      });
     }
     res.render("recipe-details", { recipe });
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load recipe details" });
+    res.status(500).render("error", {
+      error: "Failed to load recipe details",
+      message: err.message || "Something went wrong",
+      status: 500
+    });
   }
 });
 
@@ -127,12 +142,15 @@ router.get("/profile", verifyToken, async (req, res) => {
         select: 'name'
       }
     });
-    // Get user's recipes
     const recipes = await Recipes.find({ author: user._id });
     res.render("user/profile", { recipes });
   } catch (error) {
     console.error("Profile error:", error);
-    res.status(500).render("error", { error: "Failed to load profile" });
+    res.status(500).render("error", {
+      error: "Failed to load profile",
+      message: error.message || "Something went wrong",
+      status: 500
+    });
   }
 });
 
@@ -154,7 +172,6 @@ router.get('/recipes/admin', (req, res) => {
     });
   }
 
-  // If user is admin, redirect to admin dashboard
   res.redirect('/admin/dashboard');
 });
 
