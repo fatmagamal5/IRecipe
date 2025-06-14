@@ -1,32 +1,34 @@
 <!-- Sidebar -->
-<div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background: linear-gradient(to bottom, var(--heading-color), #1a1a1f);">
+<div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
   <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-    <a href="/admin/dashboard" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-      <span class="fs-5 d-none d-sm-inline" style="font-family: var(--heading-font);">Admin Panel</span>
+    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <span class="fs-5 d-none d-sm-inline">Admin Panel</span>
     </a>
-    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100" id="menu">
-      <li class="nav-item w-100">
-        <a href="/admin/dashboard" class="nav-link align-middle px-3 py-3 text-white d-flex align-items-center" style="transition: all 0.3s ease;">
-          <i class="fs-4 bi-house me-2"></i>
-          <span class="ms-1 d-none d-sm-inline" style="font-family: var(--nav-font);">Dashboard</span>
+    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+      <li class="nav-item">
+        <a href="/admin/dashboard" class="nav-link align-middle px-0 text-white">
+          <i class="bi bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item w-100">
-        <a href="/admin/recipes" class="nav-link px-3 py-3 align-middle text-white d-flex align-items-center" style="transition: all 0.3s ease;">
-          <i class="fs-4 bi-book me-2"></i>
-          <span class="ms-1 d-none d-sm-inline" style="font-family: var(--nav-font);">Recipes</span>
+      <li class="nav-item">
+        <a href="/admin/recipes" class="nav-link align-middle px-0 text-white">
+          <i class="bi bi-book"></i> <span class="ms-1 d-none d-sm-inline">Recipes</span>
         </a>
       </li>
-      <li class="nav-item w-100">
-        <a href="/admin/users" class="nav-link px-3 py-3 align-middle text-white d-flex align-items-center" style="transition: all 0.3s ease;">
-          <i class="fs-4 bi-people me-2"></i>
-          <span class="ms-1 d-none d-sm-inline" style="font-family: var(--nav-font);">Users</span>
+      <li class="nav-item">
+        <a href="/admin/reviews" class="nav-link align-middle px-0 text-white">
+          <i class="bi bi-star"></i> <span class="ms-1 d-none d-sm-inline">Reviews</span>
+          <span class="badge bg-danger ms-2" id="pendingReviewsCount">0</span>
         </a>
       </li>
-      <li class="nav-item w-100">
-        <a href="/api/user/logout" class="nav-link px-3 py-3 align-middle text-white d-flex align-items-center" style="transition: all 0.3s ease;">
-          <i class="fs-4 bi-box-arrow-right me-2"></i>
-          <span class="ms-1 d-none d-sm-inline" style="font-family: var(--nav-font);">Logout</span>
+      <li class="nav-item">
+        <a href="/admin/users" class="nav-link align-middle px-0 text-white">
+          <i class="bi bi-people"></i> <span class="ms-1 d-none d-sm-inline">Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout">
+          <i class="bi bi-box-arrow-right"></i> <span class="ms-1 d-none d-sm-inline">Logout</span>
         </a>
       </li>
     </ul>
@@ -93,4 +95,22 @@
       }
     });
   });
+
+  // Update pending reviews count
+  async function updatePendingReviewsCount() {
+    try {
+      const response = await fetch('/admin/reviews/pending/count');
+      const data = await response.json();
+      const badge = document.getElementById('pendingReviewsCount');
+      if (badge) {
+        badge.textContent = data.count;
+        badge.style.display = data.count > 0 ? 'inline' : 'none';
+      }
+    } catch (error) {
+      console.error('Error updating pending reviews count:', error);
+    }
+  }
+
+  // Update count when page loads
+  document.addEventListener('DOMContentLoaded', updatePendingReviewsCount);
 </script>

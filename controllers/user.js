@@ -133,16 +133,13 @@ export const signin = async (req, res) => {
     if (!(await bcrypt.compareSync(password, user.password)))
       return res.status(400).json({ error: "Wrong email or password" });
 
-    const token = JsonWebToken.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-    });
+    // Store user info in session
+    req.session.user = {
+      id: user._id,
+      role: user.role,
+      email: user.email,
+      name: user.name
+    };
 
     return res.status(200).json({ msg: "User signin successfully", user });
   } catch (e) {
@@ -154,14 +151,21 @@ export const signin = async (req, res) => {
 // Logout
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token");
-    return res.redirect("/");
+    console.log('Logout called. Session before destroy:', req.session);
+    req.session.destroy((err) => {
+      if (err) {
+        console.log('Error destroying session:', err);
+        return res.status(500).json({ error: "Something went wrong" });
+      }
+      res.clearCookie('connect.sid');
+      console.log('Session destroyed. Redirecting to home.');
+      return res.redirect("/");
+    });
   } catch (e) {
-    console.log(e);
+    console.log('Logout exception:', e);
     return res.status(500).json({ error: "Something went wrong" });
   }
 };
-
 
 // =========================
 // FAVORITES FEATURE BELOW
@@ -242,4 +246,4 @@ export const changePassword = async (req, res) => {
     console.error('Error changing password:', error);
     res.status(500).json({ message: 'Error changing password' });
   }
-}; 
+};
