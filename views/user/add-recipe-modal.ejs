@@ -1,0 +1,695 @@
+<div class="modal fade" id="addRecipeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Recipe</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="recipeForm">
+          <div class="mb-3">
+            <label for="recipeTitle" class="form-label">
+              Recipe Title <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="recipeTitle"
+              placeholder="Enter recipe title"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="recipeDescription" class="form-label"
+              >Description</label
+            >
+            <textarea
+              class="form-control"
+              id="recipeDescription"
+              rows="3"
+              placeholder="Brief description of your recipe"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="recipeImageInput" class="form-label"
+              >Recipe Image</label
+            >
+            <div
+              class="upload-area"
+              onclick="document.getElementById('recipeImageInput').click()"
+            >
+              <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+              <p class="mt-2 mb-0">Click to upload recipe image</p>
+              <small class="text-muted">or drag and drop</small>
+            </div>
+            <input
+              type="file"
+              id="recipeImageInput"
+              class="d-none"
+              accept="image/*"
+            />
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="prepTime" class="form-label">
+                Prep Time (minutes) <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" id="prepTime" min="0" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="cookTime" class="form-label">
+                Cook Time (minutes) <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" id="cookTime" min="0" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="servings" class="form-label">
+              Servings <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              class="form-control"
+              id="servings"
+              min="1"
+              placeholder="Number of servings"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">
+              Ingredients <span class="text-danger">*</span>
+            </label>
+            <div id="ingredientsList">
+              <div class="ingredient-row row mb-2">
+                <div class="col-5">
+                  <input
+                    type="text"
+                    class="form-control ingredient-name"
+                    placeholder="Ingredient name"
+                  />
+                </div>
+                <div class="col-4">
+                  <input
+                    type="text"
+                    class="form-control ingredient-quantity"
+                    placeholder="Quantity"
+                  />
+                </div>
+                <div class="col-3 d-flex">
+                  <input
+                    type="text"
+                    class="form-control ingredient-notes"
+                    placeholder="Notes (optional)"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm ms-2 remove-ingredient-btn"
+                    title="Remove ingredient"
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </div>
+            <br />
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary float-end"
+              id="addIngredientBtn"
+            >
+              + Add Ingredient
+            </button>
+          </div>
+          <br />
+          <br />
+          <div class="mb-3">
+            <label class="form-label">
+              Instructions <span class="text-danger">*</span>
+            </label>
+            <div id="instructionsList">
+              <div class="instruction-row mb-3 p-3 border rounded">
+                <div class="d-flex align-items-center mb-2">
+                  <strong>Step 1</strong>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm ms-auto remove-instruction-btn"
+                    title="Remove instruction"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <textarea
+                  class="form-control instruction-description mb-2"
+                  placeholder="Instruction description"
+                ></textarea>
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="form-control instruction-image mb-2"
+                />
+                <input
+                  type="number"
+                  class="form-control instruction-timer"
+                  placeholder="Timer (minutes, optional)"
+                  min="0"
+                />
+              </div>
+            </div>
+            <br />
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary float-end"
+              id="addInstructionBtn"
+            >
+              + Add Instruction
+            </button>
+          </div>
+          <br />
+          <br />
+          <div class="mb-3">
+            <label class="form-label">Categories</label>
+            <div class="row">
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="breakfast"
+                    id="catBreakfast"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catBreakfast"
+                    >Breakfast</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="lunch"
+                    id="catLunch"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catLunch">Lunch</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="dinner"
+                    id="catDinner"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catDinner">Dinner</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="snack"
+                    id="catSnack"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catSnack">Snack</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="dessert"
+                    id="catDessert"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catDessert"
+                    >Dessert</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="beverage"
+                    id="catBeverage"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catBeverage"
+                    >Beverage</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="soup"
+                    id="catSoup"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catSoup">Soup</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="salad"
+                    id="catSalad"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catSalad">Salad</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="appetizer"
+                    id="catAppetizer"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catAppetizer"
+                    >Appetizer</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="main course"
+                    id="catMainCourse"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catMainCourse"
+                    >Main Course</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="side dish"
+                    id="catSideDish"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catSideDish"
+                    >Side Dish</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="vegan"
+                    id="catVegan"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catVegan">Vegan</label>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="vegetarian"
+                    id="catVegetarian"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catVegetarian"
+                    >Vegetarian</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-3 col-6 mb-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="gluten-free"
+                    id="catGlutenFree"
+                    name="categories"
+                  />
+                  <label class="form-check-label" for="catGlutenFree"
+                    >Gluten-Free</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <br />
+          <div class="mb-3">
+            <label class="form-label">Nutrition Information</label>
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label for="nutritionCalories" class="form-label"
+                  >Calories</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionCalories"
+                  placeholder="Calories"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionFat" class="form-label">Fat (g)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionFat"
+                  placeholder="Fat (g)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionProtein" class="form-label"
+                  >Protein (g)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionProtein"
+                  placeholder="Protein (g)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionCarbs" class="form-label">Carbs (g)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionCarbs"
+                  placeholder="Carbs (g)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionFiber" class="form-label">Fiber (g)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionFiber"
+                  placeholder="Fiber (g)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionSugar" class="form-label">Sugar (g)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionSugar"
+                  placeholder="Sugar (g)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionSodium" class="form-label"
+                  >Sodium (mg)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="nutritionSodium"
+                  placeholder="Sodium (mg)"
+                  min="0"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="nutritionServingSize" class="form-label"
+                  >Serving Size</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nutritionServingSize"
+                  placeholder="Serving Size"
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="submit" form="recipeForm" class="btn btn-success">
+          Save Recipe
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const ingredientsList = document.getElementById("ingredientsList");
+  document.getElementById("addIngredientBtn").addEventListener("click", () => {
+    const newRow = document.createElement("div");
+    newRow.classList.add("ingredient-row", "row", "mb-2");
+    newRow.innerHTML = `
+      <div class="col-5">
+        <input type="text" class="form-control ingredient-name" placeholder="Ingredient name"  />
+      </div>
+      <div class="col-4">
+        <input type="text" class="form-control ingredient-quantity" placeholder="Quantity"  />
+      </div>
+      <div class="col-3 d-flex">
+        <input type="text" class="form-control ingredient-notes" placeholder="Notes (optional)" />
+        <button type="button" class="btn btn-danger btn-sm ms-2 remove-ingredient-btn" title="Remove ingredient">&times;</button>
+      </div>`;
+    ingredientsList.appendChild(newRow);
+  });
+  ingredientsList.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-ingredient-btn")) {
+      e.target.closest(".ingredient-row").remove();
+    }
+  });
+
+  // Instructions - add/remove with step numbering
+  const instructionsList = document.getElementById("instructionsList");
+  document.getElementById("addInstructionBtn").addEventListener("click", () => {
+    const count =
+      instructionsList.querySelectorAll(".instruction-row").length + 1;
+    const newDiv = document.createElement("div");
+    newDiv.classList.add("instruction-row", "mb-3", "p-3", "border", "rounded");
+    newDiv.innerHTML = `
+  <div class="d-flex align-items-center mb-2">
+    <strong>Step ${count}</strong>
+    <button type="button" class="btn btn-danger btn-sm ms-auto remove-instruction-btn" title="Remove instruction">&times;</button>
+  </div>
+  <textarea class="form-control instruction-description mb-2" placeholder="Instruction description" ></textarea>
+  <input type="file" accept="image/*" class="form-control instruction-image mb-2" />
+  <input type="number" class="form-control instruction-timer" placeholder="Timer (minutes, optional)" min="0" />
+`;
+
+    instructionsList.appendChild(newDiv);
+  });
+  instructionsList.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-instruction-btn")) {
+      e.target.closest(".instruction-row").remove();
+      updateInstructionSteps();
+    }
+  });
+
+  // Update step numbering after remove
+  function updateInstructionSteps() {
+    const steps = instructionsList.querySelectorAll(".instruction-row");
+    steps.forEach((stepDiv, idx) => {
+      const strongTag = stepDiv.querySelector("strong");
+      if (strongTag) strongTag.textContent = "Step " + (idx + 1);
+    });
+  }
+</script>
+
+<script>
+  function showToast(text, type = "success") {
+    const colors = {
+      success: "#28a745",
+      error: "#dc3545",
+    };
+
+    Toastify({
+      text,
+      duration: 3000,
+      newWindow: false,
+      close: true,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: true,
+      style: {
+        background: colors[type] || colors.success,
+      },
+    }).showToast();
+  }
+
+  document
+    .getElementById("recipeForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Gather form data
+      const title = document.getElementById("recipeTitle").value.trim();
+      const description = document
+        .getElementById("recipeDescription")
+        .value.trim();
+      const imageInput = document.getElementById("recipeImageInput");
+      const prepTime = document.getElementById("prepTime").value.trim();
+      const cookTime = document.getElementById("cookTime").value.trim();
+      const servings = document.getElementById("servings").value.trim();
+
+      // Ingredients
+      const ingredientRows = document.querySelectorAll(
+        "#ingredientsList .ingredient-row"
+      );
+      const ingredients = [];
+      ingredientRows.forEach((row) => {
+        const name = row.querySelector(".ingredient-name")?.value.trim();
+        const quantity = row
+          .querySelector(".ingredient-quantity")
+          ?.value.trim();
+        const notes = row.querySelector(".ingredient-notes")?.value.trim();
+        // Always push, even if empty, to preserve row count and allow backend to validate
+        ingredients.push({ name: name || "", quantity: quantity || "", notes: notes || "" });
+      });
+
+      // Instructions
+      const instructionRows = document.querySelectorAll(
+        "#instructionsList .instruction-row"
+      );
+      const instructions = [];
+      instructionRows.forEach((row, idx) => {
+        const description = row
+          .querySelector(".instruction-description")
+          ?.value.trim();
+        const image = row.querySelector(".instruction-image")?.files[0] || null;
+        const timer = row.querySelector(".instruction-timer")?.value.trim();
+        // Always push, even if empty, to preserve row count and allow backend to validate
+        instructions.push({ description: description || "", image, timer: timer || "" });
+      });
+
+      // Categories
+      const categories = Array.from(
+        document.querySelectorAll("input[name='categories']:checked")
+      ).map((el) => el.value);
+
+      // Nutrition
+      const nutrition = {
+        calories: document.getElementById("nutritionCalories").value.trim(),
+        fat: document.getElementById("nutritionFat").value.trim(),
+        protein: document.getElementById("nutritionProtein").value.trim(),
+        carbs: document.getElementById("nutritionCarbs").value.trim(),
+        fiber: document.getElementById("nutritionFiber").value.trim(),
+        sugar: document.getElementById("nutritionSugar").value.trim(),
+        sodium: document.getElementById("nutritionSodium").value.trim(),
+        servingSize: document
+          .getElementById("nutritionServingSize")
+          .value.trim(),
+      };
+
+      // Validation
+      if (!title) {
+        showToast("Recipe title is required.", "error");
+        return;
+      }
+      if (!prepTime || isNaN(prepTime) || Number(prepTime) < 0) {
+        showToast(
+          "Prep time is required and must be a non-negative number.",
+          "error"
+        );
+        return;
+      }
+      if (!cookTime || isNaN(cookTime) || Number(cookTime) < 0) {
+        showToast(
+          "Cook time is required and must be a non-negative number.",
+          "error"
+        );
+        return;
+      }
+      if (!servings || isNaN(servings) || Number(servings) < 1) {
+        showToast("Servings is required and must be at least 1.", "error");
+        return;
+      }
+      if (ingredients.length === 0) {
+        showToast("At least one ingredient is required.", "error");
+        return;
+      }
+      if (instructions.length === 0) {
+        showToast("At least one instruction is required.", "error");
+        return;
+      }
+
+      // Prepare form data for POST (supporting file uploads)
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      if (imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+      formData.append("prepTime", prepTime);
+      formData.append("cookTime", cookTime);
+      formData.append("servings", servings);
+      formData.append("categories", JSON.stringify(categories));
+      formData.append("nutrition", JSON.stringify(nutrition));
+      formData.append("ingredients", JSON.stringify(ingredients));
+      // Instructions: handle images per step
+      const instructionsData = instructions.map((inst, idx) => {
+        if (inst.image) {
+          formData.append(`instructionImage${idx}`, inst.image);
+          return { ...inst, image: `instructionImage${idx}` };
+        }
+        return inst;
+      });
+      formData.append("instructions", JSON.stringify(instructionsData));
+
+      // Submit to backend
+      fetch("/api/recipe", {
+        method: "POST",
+        body: formData,
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || "Failed to create recipe.");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          showToast("Recipe created successfully!", "success");
+          // Reset form and close modal
+          document.getElementById("recipeForm").reset();
+          const modal = bootstrap.Modal.getInstance(document.getElementById("addRecipeModal"));
+          modal.hide();
+          // Reload the page to show the new recipe
+          location.reload();
+        })
+        .catch((err) => {
+          showToast(err.message, "error");
+        });
+    });
+</script>
