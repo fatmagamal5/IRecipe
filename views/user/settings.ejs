@@ -1,0 +1,199 @@
+<div class="tab-pane fade" id="settings" role="tabpanel">
+  <div class="settings-section">
+    <h4 class="mb-3">Profile Information</h4>
+    <form id="profileForm">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="name" value="<%= user.name %>" required />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" value="<%= user.email %>" required />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Profile Picture</label>
+        <div class="upload-area" id="profilePictureUpload">
+          <input type="file" id="profilePicture" accept="image/*" style="display: none;" />
+          <div class="text-center">
+            <img src="<%= user.profilePicture %>" alt="Profile Picture" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <p class="mb-0">Click to change profile picture</p>
+            <small class="text-muted">Recommended size: 300x300 pixels</small>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary float-end">
+        <i class="bi bi-save"></i> Save Changes
+      </button>
+    </form>
+  </div>
+
+  <div class="settings-section">
+    <h3 class="mb-4">Change Password</h3>
+    <form id="passwordForm" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="currentPassword" class="form-label">Current Password</label>
+        <div class="password-toggle">
+          <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+          <button type="button" class="toggle-btn">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback" id="currentPasswordError">
+          Please enter your current password.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="newPassword" class="form-label">New Password</label>
+        <div class="password-toggle">
+          <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="6">
+          <button type="button" class="toggle-btn">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback">
+          Password must be at least 6 characters long.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+        <div class="password-toggle">
+          <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+          <button type="button" class="toggle-btn">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback" id="confirmPasswordError">
+          Passwords do not match.
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-key me-2"></i>Update Password
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Profile picture upload
+  document.getElementById('profilePictureUpload').addEventListener('click', () => {
+    document.getElementById('profilePicture').click();
+  });
+
+  document.getElementById('profilePicture').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.querySelector('#profilePictureUpload img').src = e.target.result;
+      };
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+
+  // Profile form submission
+  document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('email', document.getElementById('email').value);
+    
+    const profilePicture = document.getElementById('profilePicture').files[0];
+    if (profilePicture) {
+      formData.append('profilePicture', profilePicture);
+    }
+
+    try {
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast('Profile updated successfully!', 'success');
+      } else {
+        showToast(data.error || 'Failed to update profile', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showToast('Something went wrong', 'error');
+    }
+  });
+
+  // Password form handling
+  document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Reset previous error states
+    this.classList.remove('was-validated');
+    document.getElementById('currentPasswordError').textContent = 'Please enter your current password.';
+    
+    // Get form data
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      document.getElementById('confirmPasswordError').textContent = 'Passwords do not match.';
+      this.classList.add('was-validated');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Wrong current password
+          document.getElementById('currentPasswordError').textContent = 'Current password is incorrect.';
+          this.classList.add('was-validated');
+        } else {
+          throw new Error(data.message || 'Failed to update password');
+        }
+        return;
+      }
+      
+      // Success
+      showToast('success', 'Password updated successfully!');
+      this.reset();
+      
+    } catch (error) {
+      showToast('error', error.message || 'Failed to update password');
+    }
+  });
+
+  // Toast notification function
+  function showToast(message, type = 'success') {
+    const colors = {
+      success: '#28a745',
+      error: '#dc3545',
+      info: '#17a2b8'
+    };
+    
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: colors[type],
+      stopOnFocus: true
+    }).showToast();
+  }
+</script>

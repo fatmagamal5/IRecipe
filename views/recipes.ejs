@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IRecipes</title>
+    <%-include ("./partials/css-links.ejs") %>
+    <style>
+      .view-toggle .btn {
+        border-radius: 0;
+      }
+      .view-toggle .btn:first-child {
+        border-top-left-radius: 0.375rem;
+        border-bottom-left-radius: 0.375rem;
+      }
+      .view-toggle .btn:last-child {
+        border-top-right-radius: 0.375rem;
+        border-bottom-right-radius: 0.375rem;
+      }
+      .menu-item {
+        transition: transform 0.3s ease;
+      }
+      .menu-item:hover {
+        transform: translateY(-5px);
+      }
+      .tile-view .menu-item {
+        margin-bottom: 1rem;
+      }
+      .card-view .card {
+        height: 100%;
+      }
+      .card-view .card-img-top {
+        height: 200px;
+        object-fit: cover;
+      }
+      .menu-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .no-results {
+        text-align: center;
+        padding: 3rem 0;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+
+  <body class="index-page">
+    <%-include ("./partials/nav.ejs") %>
+
+    <main class="main">
+      <!-- Menu Section -->
+      <section id="menu" class="menu section">
+        <!-- Section Title -->
+        <div class="container section-title aos-init" data-aos="fade-up">
+          <h2>Browse Recipes</h2>
+          <p>
+            <span>Check Our</span>
+            <span class="description-title">IRecipes</span>
+          </p>
+        </div>
+        <!-- End Section Title -->
+
+        <div class="container">
+          <!-- Search and Filter Controls -->
+          <div class="row mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-lg-8 col-md-12 mb-3">
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-search"></i>
+                    </span>
+                    <input
+                      type="text"
+                      id="searchInput"
+                      class="form-control"
+                      placeholder="Search recipes..."
+                    />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <select id="timeFilter" class="form-select">
+                    <option value="">All Times</option>
+                    <option value="0-30">Under 30 min</option>
+                    <option value="30-60">30-60 min</option>
+                    <option value="60+">Over 60 min</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button
+                    id="clearFilters"
+                    class="btn btn-outline-secondary w-100"
+                  >
+                    <i class="bi bi-x-circle"></i> Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <div class="d-flex justify-content-end align-items-center">
+                <span class="me-3 text-muted">View:</span>
+                <div class="btn-group view-toggle" role="group">
+                  <button
+                    type="button"
+                    id="cardViewBtn"
+                    class="btn btn-outline-primary active"
+                  >
+                    <i class="bi bi-grid"></i> Cards
+                  </button>
+                  <button
+                    type="button"
+                    id="tileViewBtn"
+                    class="btn btn-outline-primary"
+                  >
+                    <i class="bi bi-list"></i> Tiles
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Count -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <p id="resultsCount" class="text-muted mb-0"></p>
+            </div>
+          </div>
+
+          <!-- Recipe Content -->
+          <div
+            class="tab-content aos-init"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            <div>
+              <!-- Card View -->
+              <div id="cardView" class="row gy-4 card-view">
+                <% if(recipes.length > 0) { %> <% recipes.forEach((recipe)=> {%>
+                <div
+                  class="col-lg-4 col-md-6 menu-item"
+                  data-title="<%= recipe.title.toLowerCase() %>"
+                  data-description="<%= recipe.description.toLowerCase() %>"
+                  data-time="<%= recipe.totalTime %>"
+                  data-categories="<%= recipe.categories.join(', ').toLowerCase() %>"
+                >
+                  <div class="card h-100 shadow-sm">
+                    <a href="/recipe-details/<%= recipe.id %>">
+                      <img
+                        src="<%= recipe.images %>"
+                        class="card-img-top"
+                        alt="<%= recipe.title %>"
+                      />
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title">
+                        <a
+                          href="/recipe-details/<%= recipe.id %>"
+                          class="text-decoration-none"
+                        >
+                          <%= recipe.title %>
+                        </a>
+                      </h5>
+                      <p class="card-text text-muted flex-grow-1">
+                        <%= recipe.description %>
+                      </p>
+                      <div class="d-flex flex-wrap gap-2 mb-2">
+                        <% recipe.categories.forEach(category => { %>
+                          <span class="badge bg-secondary"><%= category %></span>
+                        <% }); %>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center mt-auto"
+                      >
+                        <div class="d-flex gap-2">
+                          <span class="badge bg-primary">
+                            <i class="bi bi-clock"></i> <%= recipe.totalTime %>
+                            min
+                          </span>
+                          <span class="badge bg-info">
+                            <i class="bi bi-people"></i> <%= recipe.servings %> servings
+                          </span>
+                        </div>
+                        <a
+                          href="/recipe-details/<%= recipe.id %>"
+                          class="btn btn-sm btn-outline-primary"
+                        >
+                          View Recipe
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+
+              <!-- Tile View -->
+              <div id="tileView" class="tile-view" style="display: none">
+                <% recipes.forEach((recipe)=> { %>
+                <div
+                  class="menu-item row mb-3 p-3 border rounded shadow-sm"
+                  data-title="<%= recipe.title.toLowerCase() %>"
+                  data-description="<%= recipe.description.toLowerCase() %>"
+                  data-time="<%= recipe.totalTime %>"
+                  data-categories="<%= recipe.categories.join(', ').toLowerCase() %>"
+                >
+                  <div class="col-md-3">
+                    <a href="/recipe-details/<%= recipe.id %>">
+                      <img
+                        src="<%= recipe.images %>"
+                        class="menu-img img-fluid rounded"
+                        alt="<%= recipe.title %>"
+                      />
+                    </a>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="d-flex flex-column h-100">
+                      <h4 class="mb-2">
+                        <a
+                          href="/recipe-details/<%= recipe.id %>"
+                          class="text-decoration-none"
+                        >
+                          <%= recipe.title %>
+                        </a>
+                      </h4>
+                      <p class="text-muted mb-2 flex-grow-1">
+                        <%= recipe.description %>
+                      </p>
+                      <div class="d-flex flex-wrap gap-2 mb-2">
+                        <% recipe.categories.forEach(category => { %>
+                          <span class="badge bg-secondary"><%= category %></span>
+                        <% }); %>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center"
+                      >
+                        <div class="d-flex gap-2">
+                          <span class="badge bg-primary">
+                            <i class="bi bi-clock"></i> <%= recipe.totalTime %>
+                            min
+                          </span>
+                          <span class="badge bg-info">
+                            <i class="bi bi-people"></i> <%= recipe.servings %> servings
+                          </span>
+                        </div>
+                        <a
+                          href="/recipe-details/<%= recipe.id %>"
+                          class="btn btn-sm btn-primary"
+                        >
+                          View Recipe
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% })}else{ %>
+                <div class="d-flex justify-content-center align-items-center">
+                  <p class="h1 m-5 p-5">No Recipes found</p>
+                </div>
+                <% } %>
+              </div>
+
+              <!-- No Results Message -->
+              <div id="noResults" class="no-results" style="display: none">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h4 class="mt-3">No recipes found</h4>
+                <p class="text-muted">
+                  Try adjusting your search terms or filters
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /Menu Section -->
+
+      <!-- Pagination -->
+      <% if (totalPages > 1) { %>
+      <div class="container mb-5">
+        <nav aria-label="Recipe pagination">
+          <ul class="pagination justify-content-center">
+            <% if (hasPrevPage) { %>
+              <li class="page-item">
+                <a class="page-link" href="/recipes?page=<%= currentPage - 1 %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+              </li>
+            <% } %>
+
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="/recipes?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+
+            <% if (hasNextPage) { %>
+              <li class="page-item">
+                <a class="page-link" href="/recipes?page=<%= currentPage + 1 %>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+              </li>
+            <% } %>
+          </ul>
+        </nav>
+      </div>
+      <% } %>
+    </main>
+
+    <%- include('partials/footer') %> <%-include ("./partials/js-scripts.ejs")%>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const timeFilter = document.getElementById("timeFilter");
+        const clearFilters = document.getElementById("clearFilters");
+        const cardViewBtn = document.getElementById("cardViewBtn");
+        const tileViewBtn = document.getElementById("tileViewBtn");
+        const cardView = document.getElementById("cardView");
+        const tileView = document.getElementById("tileView");
+        const noResults = document.getElementById("noResults");
+        const resultsCount = document.getElementById("resultsCount");
+
+        let currentView = "card";
+
+        // Get all menu items
+        function getAllMenuItems() {
+          return currentView === "card"
+            ? cardView.querySelectorAll(".menu-item")
+            : tileView.querySelectorAll(".menu-item");
+        }
+
+        // Update results count
+        function updateResultsCount() {
+          const visibleItems = Array.from(getAllMenuItems()).filter(
+            (item) => item.style.display !== "none"
+          );
+          const total = getAllMenuItems().length;
+          resultsCount.textContent = `Showing ${visibleItems.length} of ${total} recipes`;
+        }
+
+        // Filter function
+        function filterRecipes() {
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          const timeValue = timeFilter.value;
+          const menuItems = getAllMenuItems();
+          let visibleCount = 0;
+
+          menuItems.forEach((item) => {
+            const title = item.dataset.title || "";
+            const description = item.dataset.description || "";
+            const time = parseInt(item.dataset.time) || 0;
+            const categories = item.dataset.categories ? item.dataset.categories.split(', ') : [];
+
+            // Search filter
+            const matchesSearch =
+              !searchTerm ||
+              title.includes(searchTerm) ||
+              description.includes(searchTerm);
+
+            // Time filter
+            let matchesTime = true;
+            if (timeValue) {
+              if (timeValue === "0-30") {
+                matchesTime = time <= 30;
+              } else if (timeValue === "30-60") {
+                matchesTime = time > 30 && time <= 60;
+              } else if (timeValue === "60+") {
+                matchesTime = time > 60;
+              }
+            }
+
+            // Show/hide item
+            if (matchesSearch && matchesTime) {
+              item.style.display = "";
+              visibleCount++;
+            } else {
+              item.style.display = "none";
+            }
+          });
+
+          // Show/hide no results message
+          if (visibleCount === 0) {
+            if (currentView === "card") {
+              cardView.style.display = "none";
+            } else {
+              tileView.style.display = "none";
+            }
+            noResults.style.display = "block";
+          } else {
+            if (currentView === "card") {
+              cardView.style.display = "";
+            } else {
+              tileView.style.display = "";
+            }
+            noResults.style.display = "none";
+          }
+
+          updateResultsCount();
+        }
+
+        // View toggle function
+        function toggleView(view) {
+          currentView = view;
+
+          if (view === "card") {
+            cardView.style.display = "";
+            tileView.style.display = "none";
+            cardViewBtn.classList.add("active");
+            tileViewBtn.classList.remove("active");
+          } else {
+            cardView.style.display = "none";
+            tileView.style.display = "";
+            tileViewBtn.classList.add("active");
+            cardViewBtn.classList.remove("active");
+          }
+
+          // Re-apply filters after view change
+          filterRecipes();
+        }
+
+        // Clear filters
+        function clearAllFilters() {
+          searchInput.value = "";
+          timeFilter.value = "";
+          filterRecipes();
+        }
+
+        // Event listeners
+        searchInput.addEventListener("input", filterRecipes);
+        timeFilter.addEventListener("change", filterRecipes);
+        clearFilters.addEventListener("click", clearAllFilters);
+        cardViewBtn.addEventListener("click", () => toggleView("card"));
+        tileViewBtn.addEventListener("click", () => toggleView("tile"));
+
+        // Initialize
+        updateResultsCount();
+      });
+    </script>
+  </body>
+</html>
