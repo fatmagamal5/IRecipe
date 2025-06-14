@@ -49,4 +49,27 @@ router.get("/contact-us", (req, res) => {
   }
 });
 
+
+// Handle /recipes/admin access
+router.get('/recipes/admin', (req, res) => {
+  if (!req.user) {
+    return res.status(401).render('error', {
+      error: 'Access Denied',
+      message: 'Please log in to access this page',
+      status: 401
+    });
+  }
+
+  if (req.user.role !== 'admin') {
+    return res.status(403).render('error', {
+      error: 'Access Denied',
+      message: 'You do not have permission to access this page',
+      status: 403
+    });
+  }
+
+  // If user is admin, redirect to admin dashboard
+  res.redirect('/admin/dashboard');
+});
+
 export default router;
