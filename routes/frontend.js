@@ -49,6 +49,10 @@ router.get("/contact-us", (req, res) => {
   }
 });
 
+// Favorite routes (protected)
+router.get("/favorites/all", verifyUser, getFavorites);
+router.post("/favorites/:recipeId", verifyUser, addFavorite);
+router.delete("/favorites/:recipeId", verifyUser, removeFavorite);
 // All recipes
 router.get("/recipes", async (req, res) => {
   try {
@@ -95,6 +99,7 @@ router.get("/recipe-details/:id", async (req, res) => {
     res.status(500).render("error", { error: "Failed to load recipe details" });
   }
 });
+  
 
 // User profile
 router.get("/profile", verifyToken, async (req, res) => {
