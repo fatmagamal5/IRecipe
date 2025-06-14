@@ -175,6 +175,7 @@
   </head>
   <body>
     <% var status = typeof status !== 'undefined' ? status : 500; %>
+    <% var message = typeof message !== 'undefined' ? message : null; %>
     <%- include("./partials/nav.ejs", { user: typeof user !== 'undefined' ? user : null }) %>
 
     <div class="error-container">
