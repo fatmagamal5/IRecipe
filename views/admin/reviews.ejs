@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IRecipes - Review Management</title>
+    <%- include("../partials/css-links.ejs") %>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  </head>
+
+  <body>
+    <%- include("../partials/nav.ejs", { user: typeof user !== 'undefined' ? user : null }) %>
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <%- include('./partials/sidebar') %>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Review Management</h1>
+          </div>
+
+          <!-- Tabs -->
+          <ul class="nav nav-tabs mb-4" id="reviewTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                Pending Reviews
+                <span class="badge bg-danger ms-2"><%= pendingReviews.length %></span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
+                Approved Reviews
+                <span class="badge bg-success ms-2"><%= approvedReviews.length %></span>
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tab Content -->
+          <div class="tab-content" id="reviewTabsContent">
+            <!-- Pending Reviews Tab -->
+            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Recipe</th>
+                      <th>Rating</th>
+                      <th>Comment</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (pendingReviews.length > 0) { %>
+                      <% pendingReviews.forEach(review => { %>
+                        <tr id="review-<%= review._id %>">
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="<%= review.user.profilePicture || '/img/default-profilePicture.png' %>" 
+                                   class="rounded-circle me-2" 
+                                   style="width: 32px; height: 32px;"
+                                   onerror="this.src='/img/default-profilePicture.png'">
+                              <%= review.user.name %>
+                            </div>
+                          </td>
+                          <td><%= review.recipe.title %></td>
+                          <td>
+                            <div class="stars">
+                              <% for(let i = 0; i < review.rating; i++) { %>
+                                <i class="bi bi-star-fill text-warning"></i>
+                              <% } %>
+                              <% for(let i = review.rating; i < 5; i++) { %>
+                                <i class="bi bi-star text-warning"></i>
+                              <% } %>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-link p-0" onclick="showReviewDetails('<%= review._id %>')">
+                              <%= review.comment.substring(0, 50) %><%= review.comment.length > 50 ? '...' : '' %>
+                            </button>
+                          </td>
+                          <td><%= new Date(review.createdAt).toLocaleDateString() %></td>
+                          <td>
+                            <div class="btn-group">
+                              <button class="btn btn-sm btn-success" onclick="approveReview('<%= review._id %>')">
+                                <i class="bi bi-check-circle"></i>
+                              </button>
+                              <button class="btn btn-sm btn-danger" onclick="rejectReview('<%= review._id %>')">
+                                <i class="bi bi-x-circle"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="6" class="text-center">No pending reviews</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Approved Reviews Tab -->
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Recipe</th>
+                      <th>Rating</th>
+                      <th>Comment</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (approvedReviews.length > 0) { %>
+                      <% approvedReviews.forEach(review => { %>
+                        <tr id="review-<%= review._id %>">
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="<%= review.user.profilePicture || '/img/default-profilePicture.png' %>" 
+                                   class="rounded-circle me-2" 
+                                   style="width: 32px; height: 32px;"
+                                   onerror="this.src='/img/default-profilePicture.png'">
+                              <%= review.user.name %>
+                            </div>
+                          </td>
+                          <td><%= review.recipe.title %></td>
+                          <td>
+                            <div class="stars">
+                              <% for(let i = 0; i < review.rating; i++) { %>
+                                <i class="bi bi-star-fill text-warning"></i>
+                              <% } %>
+                              <% for(let i = review.rating; i < 5; i++) { %>
+                                <i class="bi bi-star text-warning"></i>
+                              <% } %>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-link p-0" onclick="showReviewDetails('<%= review._id %>')">
+                              <%= review.comment.substring(0, 50) %><%= review.comment.length > 50 ? '...' : '' %>
+                            </button>
+                          </td>
+                          <td><%= new Date(review.createdAt).toLocaleDateString() %></td>
+                          <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteReview('<%= review._id %>')">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="6" class="text-center">No approved reviews</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Review Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="reviewDetails">
+              <!-- Review details will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success" id="approveReviewBtn">Approve</button>
+            <button type="button" class="btn btn-danger" id="rejectReviewBtn">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Confirmation Modal -->
+    <div class="modal fade" id="approvalConfirmModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title">
+              <i class="bi bi-check-circle me-2"></i>
+              Approve Review
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">Are you sure you want to approve this review? Once approved, it will be visible on the recipe page.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-2"></i>
+              Cancel
+            </button>
+            <button type="button" class="btn btn-success" id="confirmApprove">
+              <i class="bi bi-check-circle me-2"></i>
+              Yes, Approve Review
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include("../partials/footer.ejs") %>
+    <%- include("../partials/js-scripts.ejs") %>
+
+    <script>
+      let currentReviewId = null;
+      const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+      const approvalConfirmModal = new bootstrap.Modal(document.getElementById('approvalConfirmModal'));
+
+      // Show review details in modal
+      async function showReviewDetails(reviewId) {
+        try {
+          const response = await fetch(`/admin/reviews/${reviewId}`);
+          const review = await response.json();
+          
+          currentReviewId = reviewId;
+          
+          document.getElementById('reviewDetails').innerHTML = `
+            <div class="mb-3">
+              <strong>User:</strong> ${review.user.name}
+            </div>
+            <div class="mb-3">
+              <strong>Recipe:</strong> ${review.recipe.title}
+            </div>
+            <div class="mb-3">
+              <strong>Rating:</strong>
+              <div class="stars">
+                ${Array(review.rating).fill('<i class="bi bi-star-fill text-warning"></i>').join('')}
+                ${Array(5 - review.rating).fill('<i class="bi bi-star text-warning"></i>').join('')}
+              </div>
+            </div>
+            <div class="mb-3">
+              <strong>Comment:</strong>
+              <p class="mt-2">${review.comment}</p>
+            </div>
+            <div class="mb-3">
+              <strong>Date:</strong> ${new Date(review.createdAt).toLocaleString()}
+            </div>
+          `;
+
+          // Show/hide action buttons based on review status
+          document.getElementById('approveReviewBtn').style.display = review.isApproved ? 'none' : 'inline-block';
+          document.getElementById('rejectReviewBtn').style.display = review.isApproved ? 'none' : 'inline-block';
+
+          reviewModal.show();
+        } catch (error) {
+          console.error('Error loading review details:', error);
+          showToast('Failed to load review details', 'error');
+        }
+      }
+
+      // Approve review
+      async function approveReview(reviewId) {
+        currentReviewId = reviewId;
+        approvalConfirmModal.show();
+      }
+
+      // Handle approval confirmation
+      document.getElementById('confirmApprove').addEventListener('click', async () => {
+        try {
+          const response = await fetch(`/admin/reviews/${currentReviewId}/approve`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            showToast('Review approved successfully', 'success');
+            // Remove the review from pending and add to approved
+            const row = document.getElementById(`review-${currentReviewId}`);
+            row.remove();
+            // Update counts
+            updateReviewCounts();
+          } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to approve review', 'error');
+          }
+        } catch (error) {
+          console.error('Error approving review:', error);
+          showToast('Failed to approve review', 'error');
+        } finally {
+          approvalConfirmModal.hide();
+        }
+      });
+
+      // Reject review
+      async function rejectReview(reviewId) {
+        if (!confirm('Are you sure you want to reject this review?')) return;
+
+        try {
+          const response = await fetch(`/admin/reviews/${reviewId}/reject`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            showToast('Review rejected successfully', 'success');
+            // Remove the review row
+            const row = document.getElementById(`review-${reviewId}`);
+            row.remove();
+            // Update counts
+            updateReviewCounts();
+          } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to reject review', 'error');
+          }
+        } catch (error) {
+          console.error('Error rejecting review:', error);
+          showToast('Failed to reject review', 'error');
+        }
+      }
+
+      // Delete approved review
+      async function deleteReview(reviewId) {
+        if (!confirm('Are you sure you want to delete this review?')) return;
+
+        try {
+          const response = await fetch(`/admin/reviews/${reviewId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            showToast('Review deleted successfully', 'success');
+            // Remove the review row
+            const row = document.getElementById(`review-${reviewId}`);
+            row.remove();
+            // Update counts
+            updateReviewCounts();
+          } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to delete review', 'error');
+          }
+        } catch (error) {
+          console.error('Error deleting review:', error);
+          showToast('Failed to delete review', 'error');
+        }
+      }
+
+      // Update review counts
+      function updateReviewCounts() {
+        const pendingCount = document.querySelector('#pending tbody tr:not([style*="display: none"])').length;
+        const approvedCount = document.querySelector('#approved tbody tr:not([style*="display: none"])').length;
+        
+        document.querySelector('#pending-tab .badge').textContent = pendingCount;
+        document.querySelector('#approved-tab .badge').textContent = approvedCount;
+      }
+
+      // Show toast notification
+      function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        `;
+
+        document.body.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html> 
