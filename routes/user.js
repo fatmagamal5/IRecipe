@@ -1,3 +1,8 @@
+
+// Favorite routes (protected)
+router.get("/favorites/all", verifyUser, getFavorites);
+router.post("/favorites/:recipeId", verifyUser, addFavorite);
+router.delete("/favorites/:recipeId", verifyUser, removeFavorite);
 import express from "express";
 import {
   signup,
@@ -32,6 +37,11 @@ router.put('/update', verifyUser, updateUser);
 router.delete('/delete', verifyUser, deleteUser);
 router.post('/change-password', verifyUser, changePassword);
 
+
+// Favorite routes (protected)
+router.get("/favorites/all", verifyUser, getFavorites);
+router.post("/favorites/:recipeId", verifyUser, addFavorite);
+router.delete("/favorites/:recipeId", verifyUser, removeFavorite);
 
 
 export default router;
