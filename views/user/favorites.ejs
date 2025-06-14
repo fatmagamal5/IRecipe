@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorite Recipes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
+        .recipe-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            background-color: white;
+            height: 100%; /* Ensure cards are same height in a row */
+            display: flex;
+            flex-direction: column;
+        }
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+        .recipe-img {
+            width: 100%;
+            height: 200px; /* Fixed height for consistency */
+            object-fit: cover; /* Cover the area, cropping if necessary */
+        }
+        .recipe-card .p-3 {
+            flex-grow: 1; /* Allow content to take available space */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Push buttons to bottom */
+        }
+        #favorites {
+            padding: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #dc3545;
+        }
+        .back-to-recipes {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div class="tab-pane fade show active" id="favorites" role="tabpanel">
+            <h3 class="mb-4">Favorite Recipes</h3>
+            <div class="row" id="favoriteRecipesContainer">
+                <p id="loadingMessage" class="text-muted">Loading your favorite recipes...</p>
+                <p id="errorMessage" class="text-danger" style="display: none;"></p>
+            </div>
+            <div class="back-to-recipes" style="display: none;">
+                <a href="/recipes" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Recipes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+        // Function to show toast notifications
+        function showToast(message, type = 'info') {
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8'
+            };
+            
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: colors[type],
+                stopOnFocus: true
+            }).showToast();
+        }
+
+        // --- Configuration ---
+        const backendUrl = window.location.origin; // Use current origin instead of hardcoded localhost
+        const recipeDetailPageUrl = '/recipe-details'; // Update to match the actual route
+
+        // --- DOM Elements ---
+        const favoriteRecipesContainer = document.getElementById('favoriteRecipesContainer');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const backToRecipes = document.querySelector('.back-to-recipes');
+
+        // --- Helper Functions ---
+
+        // Function to get the authentication token from cookie
+        function getToken() {
+            // The token is automatically sent with requests via cookies
+            // We don't need to manually get it from localStorage
+            return true;
+        }
+
+        // Function to display messages to the user
+        function displayMessage(element, message, isError = false) {
+            element.textContent = message;
+            element.style.display = 'block';
+            if (isError) {
+                element.classList.remove('text-muted');
+                element.classList.add('text-danger');
+            } else {
+                element.classList.remove('text-danger');
+                element.classList.add('text-muted');
+            }
+        }
+
+        function hideMessage(element) {
+            element.style.display = 'none';
+        }
+
+        // --- Core Logic Functions ---
+
+        // Handles viewing a recipe by navigating to its detail page
+        function viewRecipe(recipeId) {
+            if (recipeId) {
+                window.location.href = `${recipeDetailPageUrl}/${recipeId}`;
+            } else {
+                console.error("Recipe ID is undefined for viewRecipe.");
+                alert("Cannot view recipe details. Recipe ID is missing.");
+            }
+        }
+
+        // Handles removing a recipe from favorites via API call
+        async function removeFromFavorites(recipeId) {
+            if (!confirm('Are you sure you want to remove this recipe from favorites?')) {
+                return;
+            }
+
+            hideMessage(errorMessage);
+            displayMessage(loadingMessage, 'Removing recipe...', false);
+
+            try {
+                const response = await fetch(`${backendUrl}/api/user/favorites/${recipeId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Remove the card from the DOM immediately
+                    const cardToRemove = document.querySelector(`[data-recipe-id="${recipeId}"]`);
+                    if (cardToRemove) {
+                        cardToRemove.remove();
+                    }
+                    
+                    // Show success toast
+                    showToast("Recipe removed from favorites successfully!", "success");
+
+                    // Check if there are any cards left
+                    const remainingCards = document.querySelectorAll('.recipe-card');
+                    if (remainingCards.length === 0) {
+                        showEmptyState();
+                    }
+                } else if (response.status === 401 || response.status === 403) {
+                    showToast(`Authentication error: ${data.message || 'Please log in again.'}`, "error");
+                } else {
+                    showToast(`Error removing favorite: ${data.message || response.statusText}`, "error");
+                }
+            } catch (error) {
+                console.error('Error removing favorite:', error);
+                showToast("Network error or server issue. Please try again.", "error");
+            } finally {
+                hideMessage(loadingMessage);
+            }
+        }
+
+        function showEmptyState() {
+            favoriteRecipesContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="bi bi-heart"></i>
+                        <h4>No Favorite Recipes Yet</h4>
+                        <p>Start adding recipes to your favorites to see them here!</p>
+                    </div>
+                </div>
+            `;
+            // Show the back to recipes button
+            document.querySelector('.back-to-recipes').style.display = 'block';
+        }
+
+        // Dynamically creates an HTML card for a favorite recipe
+        function renderFavoriteRecipeCard(recipe) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-lg-4 col-md-6 mb-4';
+            colDiv.setAttribute('data-recipe-id', recipe._id); // Use _id instead of id
+
+            colDiv.innerHTML = `
+                <div class="recipe-card">
+                    <img
+                        src="${recipe.images || 'https://via.placeholder.com/400x200?text=No+Image'}"
+                        alt="${recipe.title || 'Recipe Image'}"
+                        class="recipe-img"
+                    />
+                    <div class="p-3">
+                        <h5 class="mb-2">${recipe.title || 'Untitled Recipe'}</h5>
+                        <p class="text-muted small mb-2 text-truncate" style="max-height: 3em; overflow: hidden;">
+                            ${recipe.description || 'No description available.'}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <small class="text-muted">By ${recipe.author?.name || 'Unknown Chef'}</small>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary mx-2 view-recipe-btn">
+                                    View Recipe
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-favorite-btn">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            colDiv.querySelector('.view-recipe-btn').addEventListener('click', () => viewRecipe(recipe._id));
+            colDiv.querySelector('.delete-favorite-btn').addEventListener('click', () => removeFromFavorites(recipe._id));
+
+            return colDiv;
+        }
+
+        // Fetches and displays all favorite recipes for the logged-in user
+        async function fetchAndDisplayFavorites() {
+            hideMessage(errorMessage);
+            displayMessage(loadingMessage, 'Loading your favorite recipes...', false);
+            favoriteRecipesContainer.innerHTML = '';
+            // Hide the back to recipes button initially
+            document.querySelector('.back-to-recipes').style.display = 'none';
+
+            try {
+                const response = await fetch(`${backendUrl}/api/user/favorites/all`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const favorites = await response.json();
+                    if (favorites.length === 0) {
+                        showEmptyState();
+                    } else {
+                        hideMessage(loadingMessage);
+                        favorites.forEach(recipe => {
+                            favoriteRecipesContainer.appendChild(renderFavoriteRecipeCard(recipe));
+                        });
+                    }
+                } else if (response.status === 401 || response.status === 403) {
+                    const data = await response.json();
+                    showToast(`Error: ${data.message || 'Please log in again.'}`, "error");
+                    hideMessage(loadingMessage);
+                } else {
+                    const data = await response.json();
+                    showToast(`Error loading favorites: ${data.message || response.statusText}`, "error");
+                    hideMessage(loadingMessage);
+                }
+            } catch (error) {
+                console.error('Error fetching favorites:', error);
+                showToast("Failed to load favorite recipes. Please check your network connection.", "error");
+                hideMessage(loadingMessage);
+            }
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndDisplayFavorites();
+        });
+    </script>
+</body>
+</html>
