@@ -1,0 +1,315 @@
+<header id="header" class="header d-flex align-items-center sticky-top">
+  <div
+    class="container position-relative d-flex align-items-center justify-content-between"
+  >
+    <% if (typeof isProfilePage === 'undefined' || isProfilePage === null || isProfilePage === false) { %>
+      <a href="/" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1 class="sitename">IRecipes</h1>
+        <span>.</span>
+      </a>
+    <% } else { %>
+      <div class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1 class="sitename">IRecipes</h1>
+        <span>.</span>
+      </div>
+    <% } %>
+
+    <nav id="navmenu" class="navmenu">
+      <% if (typeof isProfilePage === 'undefined' || isProfilePage === null ||
+      isProfilePage ===false) { %>
+      <ul>
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/about-us">About Us</a>
+        </li>
+        <li>
+          <a href="/recipes">Recipes</a>
+        </li>
+        <li>
+          <a href="/contact-us">Contact Us</a>
+        </li>
+        <% if (user && user.role === 'admin') { %>
+        <li>
+          <a href="/admin/dashboard">Dashboard</a>
+        </li>
+        <% } %>
+      </ul>
+      <% } else { %>
+      <ul id="profileTabs" role="tablist">
+        <li role="presentation">
+          <a
+            class="active"
+            id="recipes-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#recipes"
+            role="tab"
+          >
+            My Recipes
+          </a>
+        </li>
+        <li role="presentation">
+          <a
+            id="favorites-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#favorites"
+            type="button"
+            role="tab"
+          >
+            Favorites
+          </a>
+        </li>
+        <li role="presentation">
+          <a
+            id="settings-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#settings"
+            type="button"
+            role="tab"
+          >
+            Settings
+          </a>
+        </li>
+      </ul>
+
+      <% } %>
+
+      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+    </nav>
+    <% if (user == null) { %>
+    <button
+      type="button"
+      class="btn-getstarted border-0"
+      data-bs-toggle="modal"
+      data-bs-target="#authModal"
+    >
+      join us
+    </button>
+    <% }else{ %>
+    <div class="dropdown">
+      <a
+        href="#"
+        class="d-flex align-items-center text-decoration-none dropdown-toggle"
+        id="profileDropdown"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <img
+          src="<%= user.profilePic || '/img/default-profilePicture.png' %>"
+          alt="Profile"
+          width="40"
+          height="40"
+          class="rounded-circle me-2"
+          style="border: 2px solid #000"
+        />
+      </a>
+      <ul
+        class="dropdown-menu dropdown-menu-end"
+        aria-labelledby="profileDropdown"
+      >
+        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <a href="/api/user/logout" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+    <% }%>
+  </div>
+</header>
+
+<!-- Auth Modal -->
+<div
+  class="modal fade"
+  id="authModal"
+  tabindex="-1"
+  aria-labelledby="authModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center fw-bold" id="authModalLabel">
+          Sign In
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Sign Up Form -->
+        <form id="signUpForm" style="display: none" class="php-email-form">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              placeholder="Full Name"
+            />
+          </div>
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              placeholder="Email Address"
+            />
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="signupPassword"
+              placeholder="Password"
+            />
+            <span
+              class="position-absolute top-50 end-0 translate-middle-y me-3"
+              style="cursor: pointer"
+              onclick="togglePassword('signupPassword', this)"
+              >🐵</span
+            >
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-getstarted w-100">
+              Sign Up
+            </button>
+          </div>
+        </form>
+
+        <!-- Sign In Form -->
+        <form id="signInForm" class="php-email-form">
+          <div class="form-group mb-3">
+            <input
+              type="text"
+              name="email"
+              class="form-control"
+              placeholder="Email Address"
+            />
+          </div>
+          <div class="form-group position-relative mb-3">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              id="signinPassword"
+              placeholder="Password"
+            />
+            <span
+              class="position-absolute top-50 end-0 translate-middle-y me-3"
+              style="cursor: pointer"
+              onclick="togglePassword('signinPassword', this)"
+              >🐵</span
+            >
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-getstarted w-100">
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer border-0 text-center">
+        <button
+          class="btn btn-link text-decoration-none w-100 text-muted"
+          onclick="toggleForms()"
+        >
+          Create an account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+  function toggleForms() {
+    const signInForm = document.getElementById("signInForm");
+    const signUpForm = document.getElementById("signUpForm");
+    const modalTitle = document.getElementById("authModalLabel");
+    const toggleBtn = document.querySelector("#authModal .modal-footer button");
+
+    const isSignIn = signInForm.style.display !== "none";
+    signInForm.style.display = isSignIn ? "none" : "block";
+    signUpForm.style.display = isSignIn ? "block" : "none";
+    modalTitle.innerText = isSignIn ? "Sign Up" : "Sign In";
+    toggleBtn.innerText = isSignIn
+      ? "Already have an account"
+      : "Create an account";
+  }
+
+  function togglePassword(inputId, element) {
+    const input = document.getElementById(inputId);
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    element.textContent = isHidden ? "🙈" : "🐵";
+  }
+
+  signUpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = signUpForm.elements["name"].value;
+    const email = signUpForm.elements["email"].value;
+    const password = signUpForm.elements["password"].value;
+
+    if (!name.trim()) {
+      showToast("Please enter your name", "error");
+      return;
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast("Please enter a valid email address.", "error");
+      return;
+    }
+    if (!password || password.length < 6) {
+      showToast("Password must be at least 6 characters long.", "error");
+      return;
+    }
+
+    const res = await fetch("/api/user/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast("Sign up successful! Please log in.", "success");
+      toggleForms();
+    } else {
+      showToast(data.error || "An error occurred. Please try again.", "error");
+    }
+  });
+
+  signInForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = signInForm.elements["email"].value;
+    const password = signInForm.elements["password"].value;
+
+    const res = await fetch("/api/user/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast("Sign in successful!", "success");
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+    } else {
+      showToast(data.error || "An error occurred. Please try again.", "error");
+    }
+  });
+</script>

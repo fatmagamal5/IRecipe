@@ -60,4 +60,29 @@ export const verifyAdmin = async (req, res, next) => {
       status: 500
     });
   }
+};
+
+// Session-based authentication middleware
+export const verifySession = (req, res, next) => {
+  if (req.session && req.session.user) {
+    req.user = req.session.user;
+    return next();
+  }
+  return res.status(401).render('error', {
+    error: 'Access Denied',
+    message: 'Please log in to access this page',
+    status: 401
+  });
+};
+
+export const verifySessionAdmin = (req, res, next) => {
+  if (req.session && req.session.user && req.session.user.role === 'admin') {
+    req.user = req.session.user;
+    return next();
+  }
+  return res.status(403).render('error', {
+    error: 'Access Denied',
+    message: 'You do not have permission to access this page',
+    status: 403
+  });
 }; 
