@@ -1,0 +1,163 @@
+import userModel from "../models/user.js";
+import recipeModel from "../models/recipe.js";
+import bcrypt from "bcryptjs";
+import JsonWebToken from "jsonwebtoken";
+
+// Middleware to verify user
+export const verifyUser = (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  JsonWebToken.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid token" });
+
+    req.user = decoded; // decoded contains { id, role }
+    next();
+  });
+};
+
+// Get all users
+export const getUsers = async (req, res) => {
+  try {
+    const users = await userModel.find();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get user by ID
+export const getUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await userModel.findById(id);
+    if (user == null) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Update user
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role } = req.body;
+
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({ error: "Name and email are required" });
+    }
+
+    // Check if email is already taken by another user
+    const existingUser = await userModel.findOne({ email, _id: { $ne: id } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email is already taken" });
+    }
+
+    // Update user
+    const updatedUser = await userModel.findByIdAndUpdate(
+      id,
+      { name, email, role },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error('Update user error:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Delete user
+export const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await userModel.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Signup
+export const signup = async (req, res) => {
+  try {
+    const { name, email, password, role = "user" } = req.body;
+
+    if (!name || !email || !password)
+      return res.status(400).json({ error: "All fields are required" });
+
+    const user = await userModel.findOne({ email });
+    if (user) return res.status(400).json({ error: "Email is taken" });
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    const newUser = await userModel.create({
+      name,
+      email,
+      password: hash,
+      role,
+    });
+
+    return res.status(201).json({ message: "User signup successfully" });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+// Signin
+export const signin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+      return res.status(400).json({ error: "All fields are required" });
+
+    const user = await userModel.findOne({ email });
+    if (!user)
+      return res.status(400).json({ error: "Wrong email or password" });
+
+    if (!(await bcrypt.compareSync(password, user.password)))
+      return res.status(400).json({ error: "Wrong email or password" });
+
+    const token = JsonWebToken.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ msg: "User signin successfully", user });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+// Logout
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    return res.redirect("/");
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
