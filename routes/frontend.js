@@ -49,6 +49,26 @@ router.get("/contact-us", (req, res) => {
   }
 });
 
+// Recipe details
+router.get("/recipe-details/:id", async (req, res) => {
+  try {
+    const recipe = await Recipes.findById(req.params.id).populate("author");
+    if (!recipe) {
+      return res.status(404).render("error", { error: "Recipe not found" });
+    }
+    
+    // Get user with favorites if logged in
+    let user = null;
+    if (res.locals.user) {
+      user = await User.findById(res.locals.user._id).select('favorites');
+    }
+    
+    res.render("recipe-details", { recipe, user });
+  } catch (err) {
+    res.status(500).render("error", { error: "Failed to load recipe details" });
+  }
+});
+
 
 // Handle /recipes/admin access
 router.get('/recipes/admin', (req, res) => {
