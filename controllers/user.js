@@ -161,3 +161,85 @@ export const logout = async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 };
+
+
+// =========================
+// FAVORITES FEATURE BELOW
+// =========================
+
+// Get all favorite recipes for logged-in user
+export const getFavorites = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id).populate("favorites");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user.favorites);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Add a recipe to favorites
+export const addFavorite = async (req, res) => {
+  try {
+    const recipeId = req.params.recipeId;
+    const user = await userModel.findById(req.user.id);
+
+    if (!user.favorites.includes(recipeId)) {
+      user.favorites.push(recipeId);
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Added to favorites" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Remove a recipe from favorites
+export const removeFavorite = async (req, res) => {
+  try {
+    const recipeId = req.params.recipeId;
+
+    await userModel.findByIdAndUpdate(req.user.id, {
+      $pull: { favorites: recipeId },
+    });
+
+    res.status(200).json({ message: "Removed from favorites" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Change password
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    // Find user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ message: 'Error changing password' });
+  }
+}; 
