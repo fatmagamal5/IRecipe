@@ -49,6 +49,33 @@ router.get("/contact-us", (req, res) => {
   }
 });
 
+// All recipes
+router.get("/recipes", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9; // 9 recipes per page
+    const skip = (page - 1) * limit;
+
+    const totalRecipes = await Recipes.countDocuments();
+    const totalPages = Math.ceil(totalRecipes / limit);
+
+    const recipes = await Recipes.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render("recipes", { 
+      recipes,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    });
+  } catch (err) {
+    res.status(500).render("error", { error: "Failed to load recipes" });
+  }
+});
+
 // Recipe details
 router.get("/recipe-details/:id", async (req, res) => {
   try {

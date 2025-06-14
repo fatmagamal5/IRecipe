@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IRecipes</title>
+    <%-include ("./partials/css-links.ejs") %>
+  </head>
+
+  <body class="index-page">
+    <%-include ("./partials/nav.ejs") %>
+
+    <main class="main">
+      <!-- About Section -->
+      <section id="about" class="about section">
+        <!-- Section Title -->
+        <div class="container section-title aos-init" data-aos="fade-up">
+          <h2>About Us<br /></h2>
+          <p>
+            <span>Learn More</span>
+            <span class="description-title">About Us</span>
+          </p>
+        </div>
+        <!-- End Section Title -->
+
+        <div class="container">
+          <div class="row gy-4">
+            <div
+              class="col-lg-7 aos-init"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <img src="/img/big photo.jpg" class="img-fluid mb-4" style="max-width: 150%; height: auto; width: 100%;" alt="" />
+              <div class="book-a-table">
+                <h3>Contact us</h3>
+                <p>+10 23456789</p>
+              </div>
+            </div>
+            <div
+              class="col-lg-5 aos-init"
+              data-aos="fade-up"
+              data-aos-delay="250"
+            >
+              <div class="content ps-0 ps-lg-5">
+                <p class="fst-italic">
+                  IRecipes was born from a simple idea — to make cooking
+                  smarter, easier, and more fun for everyone.
+                </p>
+                <ul>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>
+                      Save, organize, and share your favorite recipes
+                      effortlessly.
+                    </span>
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>
+                      Discover new dishes tailored to your taste, mood, and
+                      diet.
+                    </span>
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>
+                      Generate smart grocery lists, track nutrition, and make
+                      mealtime stress-free.
+                    </span>
+                  </li>
+                </ul>
+                <p>
+                  Whether you're a home cook, a culinary student, or just
+                  someone who loves good food — IRecipes is your intelligent
+                  kitchen partner. We're building a community that shares a love
+                  for flavor, simplicity, and healthy living.
+                </p>
+
+                <div class="position-relative mt-4">
+               <img src="img/about-2.jpg" class="img-fluid" alt="" />
+               <a 
+                href="https://www.youtube.com/watch?v=5rZ0Jqp1VcY" 
+                 class="glightbox pulsating-play-btn" 
+                 data-type="video">
+    
+                 </a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /About Section -->
+
+      <!-- Why Us Section -->
+      <section id="why-us" class="why-us section light-background">
+        <div class="container">
+          <div class="row gy-4">
+            <div
+              class="col-lg-4 aos-init"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <div class="why-box">
+                <h3>Why Choose IRecipes</h3>
+                <p>
+                  At IRecipes, we're not just a recipe app — we're a smarter way
+                  to cook. Our system is designed with you in mind, helping you
+                  explore cuisines, save time in the kitchen, and eat better
+                  every day. With personalized suggestions, organized planning,
+                  and a vibrant recipe community, IRecipes makes your cooking
+                  journey smoother and more inspiring.
+                </p>
+                <div class="text-center">
+                  <a href="#" class="more-btn"
+                    ><span>Learn More</span> <i class="bi bi-chevron-right"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <!-- End Why Box -->
+
+            <div class="col-lg-8 d-flex align-items-stretch">
+              <div
+                class="row gy-4 aos-init"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
+                <div class="col-xl-4">
+                  <div
+                    class="icon-box d-flex flex-column justify-content-center align-items-center"
+                  >
+                    <i class="bi bi-clipboard-data"></i>
+                    <h4>Smart Recipe Management</h4>
+                    <p>
+                      Keep your personal recipe library organized with tags,
+                      filters, and quick access — all in one place.
+                    </p>
+                  </div>
+                </div>
+                <!-- End Icon Box -->
+
+                <div
+                  class="col-xl-4 aos-init"
+                  data-aos="fade-up"
+                  data-aos-delay="300"
+                >
+                  <div
+                    class="icon-box d-flex flex-column justify-content-center align-items-center"
+                  >
+                    <i class="bi bi-gem"></i>
+                    <h4>Tailored Culinary Experience</h4>
+                    <p>
+                      Get meal ideas that match your preferences, ingredients on
+                      hand, or dietary needs — instantly.
+                    </p>
+                  </div>
+                </div>
+                <!-- End Icon Box -->
+
+                <div
+                  class="col-xl-4 aos-init"
+                  data-aos="fade-up"
+                  data-aos-delay="400"
+                >
+                  <div
+                    class="icon-box d-flex flex-column justify-content-center align-items-center"
+                  >
+                    <i class="bi bi-inboxes"></i>
+                    <h4>Effortless Planning</h4>
+                    <p>
+                      Plan meals for the week and auto-generate your shopping
+                      list. Cooking has never been this organized.
+                    </p>
+                  </div>
+                </div>
+                <!-- End Icon Box -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- /Why Us Section -->
+
+      <!-- Stats Section -->
+      <section id="stats" class="stats section dark-background">
+        <img
+          src="img/stats-bg.jpg"
+          alt=""
+          data-aos="fade-in"
+          class="aos-init"
+        />
+
+        <div
+          class="container position-relative aos-init"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
+          <div class="row gy-4">
+            <div class="col-lg-3 col-md-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span
+                  data-purecounter-start="0"
+                  data-purecounter-end="<%= stats.users %>"
+                  data-purecounter-duration="1"
+                  class="purecounter"
+                  >0</span
+                >
+                <p>Active Users</p>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+
+            <div class="col-lg-3 col-md-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span
+                  data-purecounter-start="0"
+                  data-purecounter-end="<%= stats.recipes %>"
+                  data-purecounter-duration="1"
+                  class="purecounter"
+                  >0</span
+                >
+                <p>Recipes</p>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+
+            <div class="col-lg-3 col-md-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span
+                  data-purecounter-start="0"
+                  data-purecounter-end="<%= stats.categories %>"
+                  data-purecounter-duration="1"
+                  class="purecounter"
+                  >0</span
+                >
+                <p>Categories</p>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+
+            <div class="col-lg-3 col-md-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span
+                  data-purecounter-start="0"
+                  data-purecounter-end="<%= stats.favorites %>"
+                  data-purecounter-duration="1"
+                  class="purecounter"
+                  >0</span
+                >
+                <p>Favorites</p>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+          </div>
+        </div>
+      </section>
+      <!-- /Stats Section -->
+
+      <!-- Testimonials Section -->
+      <section class="testimonials py-5 position-relative">
+        <!-- Background Elements -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden" style="z-index: -1;">
+          <div class="position-absolute top-0 start-0 w-100 h-100 bg-light opacity-50"></div>
+          <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('/img/pattern.png') repeat; opacity: 0.1;"></div>
+        </div>
+
+        <div class="container position-relative">
+          <!-- Section Header -->
+          <div class="row justify-content-center mb-4">
+            <div class="col-lg-8 text-center">
+              <span class="badge bg-primary-soft mb-3 px-3 py-2 rounded-pill">
+                <i class="bi bi-star-fill me-2"></i>
+                Customer Reviews
+              </span>
+              <h2 class="display-4 fw-bold text-dark mb-3">What Our Community Says</h2>
+              <p class="lead text-muted mb-0">Discover authentic experiences and feedback from our valued community members</p>
+            </div>
+          </div>
+
+          <!-- Testimonials Carousel -->
+          <div class="row justify-content-center">
+            <div class="col-lg-10">
+              <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
+                <!-- Carousel Items -->
+                <div class="carousel-inner">
+                  <% if (reviews && reviews.length > 0) { %>
+                    <% reviews.forEach((review, index) => { %>
+                      <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <div class="testimonial-card">
+                          <div class="row g-0">
+                            <!-- User Info -->
+                            <div class="col-auto">
+                              <div class="author-image">
+                                <img src="<%= review.user.profilePicture || '/img/default-profilePicture.png' %>" 
+                                     alt="<%= review.user.name %>"
+                                     onerror="this.src='/img/default-profilePicture.png'">
+                              </div>
+                            </div>
+                            
+                            <!-- Review Content -->
+                            <div class="col">
+                              <div class="testimonial-content">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                  <div>
+                                    <h5 class="author-name mb-1"><%= review.user.name %></h5>
+                                    <p class="recipe-name mb-0">
+                                      <i class="bi bi-bookmark-star-fill me-1"></i>
+                                      <%= review.recipe.title %>
+                                    </p>
+                                  </div>
+                                  <div class="rating">
+                                    <% for(let i = 0; i < review.rating; i++) { %>
+                                      <i class="bi bi-star-fill"></i>
+                                    <% } %>
+                                    <% for(let i = review.rating; i < 5; i++) { %>
+                                      <i class="bi bi-star"></i>
+                                    <% } %>
+                                  </div>
+                                </div>
+                                <p class="review-text mb-2"><%= review.comment %></p>
+                                <small class="text-muted">
+                                  <i class="bi bi-calendar3 me-1"></i>
+                                  <%= new Date(review.createdAt).toLocaleDateString() %>
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="carousel-item active">
+                      <div class="empty-state">
+                        <div class="empty-state-icon">
+                          <i class="bi bi-chat-square-quote"></i>
+                        </div>
+                        <h3>No Reviews Yet</h3>
+                        <p class="text-muted">Be the first to share your experience with our recipes!</p>
+                        <a href="/recipes" class="btn btn-primary btn-lg">
+                          <i class="bi bi-arrow-right me-2"></i>
+                          Explore Recipes
+                        </a>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Carousel Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>
+        /* Testimonials Section Styles */
+        .testimonials {
+          background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .badge.bg-primary-soft {
+          background-color: rgba(13, 110, 253, 0.1);
+          color: #0d6efd;
+          font-weight: 500;
+        }
+
+        /* Testimonial Card Styles */
+        .testimonial-card {
+          background: #ffffff;
+          border-radius: 8px;
+          padding: 0.75rem;
+          position: relative;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          margin: 0 0.5rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        .testimonial-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Author Image Styles */
+        .author-image {
+          width: 45px;
+          height: 45px;
+          border-radius: 6px;
+          overflow: hidden;
+          margin-right: 0.75rem;
+          border: 1px solid #fff;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .author-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        /* Content Styles */
+        .testimonial-content {
+          padding: 0.25rem 0;
+        }
+
+        .author-name {
+          color: #212529;
+          font-weight: 600;
+          font-size: 0.9rem;
+          margin: 0;
+        }
+
+        .recipe-name {
+          color: #6c757d;
+          font-size: 0.8rem;
+          margin: 0;
+        }
+
+        /* Rating Styles */
+        .rating {
+          color: #ffc107;
+          font-size: 0.8rem;
+        }
+
+        .rating i {
+          margin-left: 0.1rem;
+        }
+
+        /* Review Text Styles */
+        .review-text {
+          color: #6c757d;
+          font-size: 0.85rem;
+          line-height: 1.4;
+          margin: 0.25rem 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Carousel Styles */
+        .carousel {
+          padding: 0.5rem 0;
+        }
+
+        .carousel-inner {
+          padding: 0.25rem 0;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+          width: 5%;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .carousel:hover .carousel-control-prev,
+        .carousel:hover .carousel-control-next {
+          opacity: 0.8;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+          background-color: rgba(0, 0, 0, 0.5);
+          padding: 1rem;
+          border-radius: 50%;
+        }
+
+        /* Empty State Styles */
+        .empty-state {
+          text-align: center;
+          padding: 2rem 1.5rem;
+          background: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          max-width: 400px;
+          margin: 0 auto;
+        }
+
+        .empty-state-icon {
+          font-size: 2.5rem;
+          color: #dee2e6;
+          margin-bottom: 0.75rem;
+        }
+
+        .empty-state h3 {
+          color: #212529;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          font-size: 1.1rem;
+        }
+
+        .empty-state p {
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+          padding: 0.4rem 1rem;
+          font-weight: 500;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+          .testimonial-card {
+            padding: 0.5rem;
+          }
+
+          .author-image {
+            width: 40px;
+            height: 40px;
+          }
+
+          .carousel-control-prev-icon,
+          .carousel-control-next-icon {
+            padding: 0.75rem;
+          }
+        }
+      </style>
+
+      <script>
+        // Initialize carousel with custom settings
+        document.addEventListener('DOMContentLoaded', function() {
+          const carousel = new bootstrap.Carousel(document.getElementById('testimonialsCarousel'), {
+            interval: 4000, // Change slide every 4 seconds
+            wrap: true,     // Continuous loop
+            keyboard: true, // Keyboard navigation
+            pause: 'hover'  // Pause on mouse hover
+          });
+
+          // Add smooth transition effect
+          const carouselItems = document.querySelectorAll('.carousel-item');
+          carouselItems.forEach(item => {
+            item.style.transition = 'transform 0.8s ease-in-out';
+          });
+        });
+      </script>
+    </main>
+
+    <%- include('partials/footer') %> <%-include ("./partials/js-scripts.ejs")
+    %>
+  </body>
+</html>
