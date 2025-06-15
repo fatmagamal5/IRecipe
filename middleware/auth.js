@@ -8,7 +8,11 @@ export const verifyToken = async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+      return res.status(401).render('error', { 
+        error: 'Access Denied',
+        message: 'You do not have permission to access this page',
+        status: 403
+      });
     }
 
     // Verify token
@@ -18,7 +22,11 @@ export const verifyToken = async (req, res, next) => {
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {
-      return res.status(401).json({ error: 'Invalid token. User not found.' });
+      return res.status(401).render('error', { 
+        error: 'Access Denied',
+        message: 'You do not have permission to access this page',
+        status: 403
+      });
     }
 
     // Add user to request object
@@ -28,7 +36,11 @@ export const verifyToken = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
-    res.status(401).json({ error: 'Invalid token.' });
+    res.status(401).render('error', { 
+      error: 'Access Denied',
+      message: 'You do not have permission to access this page',
+      status: 403
+    });
   }
 };
 
@@ -36,10 +48,10 @@ export const verifyToken = async (req, res, next) => {
 export const verifyAdmin = async (req, res, next) => {
   try {
     if (!req.user) {
-      return res.status(401).render('error', { 
+      return res.status(403).render('error', { 
         error: 'Access Denied',
-        message: 'Please log in to access this page',
-        status: 401
+        message: 'You do not have permission to access this page',
+        status: 403
       });
     }
 
@@ -54,10 +66,10 @@ export const verifyAdmin = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Admin verification error:', error);
-    res.status(500).render('error', { 
-      error: 'Server Error',
-      message: 'An error occurred while verifying admin access',
-      status: 500
+    res.status(403).render('error', { 
+      error: 'Access Denied',
+      message: 'You do not have permission to access this page',
+      status: 403
     });
   }
 };

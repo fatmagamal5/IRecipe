@@ -4,17 +4,43 @@ import bcrypt from "bcryptjs";
 import JsonWebToken from "jsonwebtoken";
 
 // Middleware to verify user
-export const verifyUser = (req, res, next) => {
-  const token = req.cookies.token;
+export const verifyUser = async (req, res, next) => {
+  try {
+    // First check session
+    if (req.session && req.session.user) {
+      req.user = req.session.user;
+      return next();
+    }
 
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+    // If no session, check JWT token
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-  JsonWebToken.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
+    const decoded = JsonWebToken.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id).select('-password');
+    
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
 
-    req.user = decoded; // decoded contains { id, role }
+    // Update session with user info
+    req.session.user = {
+      id: user._id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      profilePicture: user.profilePicture,
+      lastActive: user.lastActive
+    };
+
+    req.user = user;
     next();
-  });
+  } catch (err) {
+    console.error('Auth verification error:', err);
+    return res.status(401).json({ error: "Invalid token" });
+  }
 };
 
 // Get all users
@@ -133,17 +159,51 @@ export const signin = async (req, res) => {
     if (!(await bcrypt.compareSync(password, user.password)))
       return res.status(400).json({ error: "Wrong email or password" });
 
-    // Store user info in session
+    // Create JWT token with more user information
+    const token = JsonWebToken.sign(
+      { 
+        id: user._id, 
+        role: user.role,
+        email: user.email,
+        name: user.name
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Store complete user info in session
     req.session.user = {
       id: user._id,
       role: user.role,
       email: user.email,
-      name: user.name
+      name: user.name,
+      profilePicture: user.profilePicture,
+      lastActive: user.lastActive
     };
 
-    return res.status(200).json({ msg: "User signin successfully", user });
+    // Set JWT token in cookie with secure options
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    // Update lastActive timestamp
+    await userModel.findByIdAndUpdate(user._id, { lastActive: new Date() });
+
+    return res.status(200).json({ 
+      message: "User signin successfully", 
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profilePicture: user.profilePicture
+      }
+    });
   } catch (e) {
-    console.log(e);
+    console.error('Signin error:', e);
     return res.status(500).json({ error: "Something went wrong" });
   }
 };
@@ -151,18 +211,23 @@ export const signin = async (req, res) => {
 // Logout
 export const logout = async (req, res) => {
   try {
-    console.log('Logout called. Session before destroy:', req.session);
+    // Clear the JWT token cookie
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
+    // Destroy the session
     req.session.destroy((err) => {
       if (err) {
-        console.log('Error destroying session:', err);
-        return res.status(500).json({ error: "Something went wrong" });
+        console.error('Error destroying session:', err);
+        return res.status(500).json({ error: "Error during logout" });
       }
-      res.clearCookie('connect.sid');
-      console.log('Session destroyed. Redirecting to home.');
       return res.redirect("/");
     });
   } catch (e) {
-    console.log('Logout exception:', e);
+    console.error('Logout error:', e);
     return res.status(500).json({ error: "Something went wrong" });
   }
 };

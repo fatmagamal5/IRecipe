@@ -351,14 +351,15 @@
               </div>
             </div>
             <% if (user) { %>
+              <% var isFavorite = user && user.favorites && user.favorites.includes(recipe._id); %>
               <div class="mt-3">
                 <button 
                   class="btn favorite-btn" 
                   data-recipe-id="<%= recipe._id %>"
-                  data-is-favorite="<%= user.favorites.includes(recipe._id) %>"
+                  data-is-favorite="<%= isFavorite %>"
                 >
-                  <i class="bi bi-heart<%= user.favorites.includes(recipe._id) ? '-fill' : '' %>"></i>
-                  <%= user.favorites.includes(recipe._id) ? 'Remove from Favorites' : 'Add to Favorites' %>
+                  <i class="bi bi-heart<%= isFavorite ? '-fill' : '' %>"></i>
+                  <%= isFavorite ? 'Remove from Favorites' : 'Add to Favorites' %>
                 </button>
               </div>
             <% } %>

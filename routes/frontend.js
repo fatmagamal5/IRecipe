@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import Recipes from "../models/recipe.js";
-import { verifyAdmin, verifyToken } from "../middleware/auth.js";
+import { verifyAdmin, verifyToken, verifySession } from "../middleware/auth.js";
 import { addReview, getApprovedReviews, getRecipeReviews } from '../controllers/review.js';
 import Review from '../models/review.js';
 
@@ -64,7 +64,7 @@ router.get("/about-us", async (req, res) => {
     });
   } catch (err) {
     console.error("About us error:", err);
-    res.status(500).render("error", { error: "Failed to load About Us page", status: 500 });
+    res.status(500).render("error", { error: "Failed to load About Us page" });
   }
 });
 
@@ -100,7 +100,7 @@ router.get("/recipes", async (req, res) => {
       hasPrevPage: page > 1
     });
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load recipes", status: 500 });
+    res.status(500).render("error", { error: "Failed to load recipes" });
   }
 });
 
@@ -118,9 +118,9 @@ router.get("/recipe-details/:id", async (req, res) => {
 });
 
 // User profile
-router.get("/profile", verifyToken, async (req, res) => {
+router.get("/profile", verifySession, async (req, res) => {
   try {
-    const user = await User.findById(res.locals.user._id).populate({
+    const user = await User.findById(res.locals.user.id).populate({
       path: 'favorites',
       populate: {
         path: 'author',
@@ -129,7 +129,7 @@ router.get("/profile", verifyToken, async (req, res) => {
     });
     // Get user's recipes
     const recipes = await Recipes.find({ author: user._id });
-    res.render("user/profile", { recipes });
+    res.render("user/profile", { user, recipes });
   } catch (error) {
     console.error("Profile error:", error);
     res.status(500).render("error", { error: "Failed to load profile", status: 500 });
