@@ -1,0 +1,57 @@
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials section">
+    <div class="container section-title" data-aos="fade-up">
+      <h2>What Are They Saying About Us</h2>
+      <p>
+        <span>Our</span>
+        <span class="description-title">Testimonials</span>
+      </p>
+    </div>
+
+    <div class="container">
+      <div class="row gy-4" id="testimonialsContainer">
+        <!-- Reviews will be loaded here dynamically -->
+      </div>
+    </div>
+  </section>
+  <!-- End Testimonials Section -->
+
+<!-- Add this before the closing body tag -->
+<script>
+  // Function to load testimonials
+  async function loadTestimonials() {
+    try {
+      const response = await fetch('/reviews/approved');
+      const reviews = await response.json();
+      
+      const container = document.getElementById('testimonialsContainer');
+      container.innerHTML = reviews.map(review => `
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="testimonial-item">
+            <div class="testimonial-img">
+              <img src="${review.user.profilePicture || '/img/default-profilePicture.png'}" class="testimonial-img" alt="${review.user.name}">
+            </div>
+            <div class="testimonial-content">
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                ${review.comment}
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+              <div class="stars">
+                ${Array(review.rating).fill('<i class="bi bi-star-fill"></i>').join('')}
+                ${Array(5 - review.rating).fill('<i class="bi bi-star"></i>').join('')}
+              </div>
+              <h3>${review.user.name}</h3>
+              <h4>${review.recipe.title}</h4>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch (error) {
+      console.error('Error loading testimonials:', error);
+    }
+  }
+
+  // Load testimonials when the page loads
+  document.addEventListener('DOMContentLoaded', loadTestimonials);
+</script> 
