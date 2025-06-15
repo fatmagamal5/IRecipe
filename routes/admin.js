@@ -61,7 +61,8 @@ router.get("/users", async (req, res) => {
     console.error("Users error:", error);
     res.status(500).render("error", {
       message: "Error loading users. Please try again later.",
-      error: process.env.NODE_ENV === 'development' ? error : null
+      error: process.env.NODE_ENV === 'development' ? error : null,
+      status: 500
     });
   }
 });
@@ -75,7 +76,8 @@ router.get("/recipes", async (req, res) => {
     console.error("Recipes error:", error);
     res.status(500).render("error", {
       message: "Error loading recipes. Please try again later.",
-      error: process.env.NODE_ENV === 'development' ? error : null
+      error: process.env.NODE_ENV === 'development' ? error : null,
+      status: 500
     });
   }
 });
@@ -103,7 +105,8 @@ router.get('/reviews', verifyAdmin, async (req, res) => {
     console.error('Error loading reviews:', error);
     res.status(500).render('error', {
       message: 'Error loading reviews',
-      error: process.env.NODE_ENV === 'development' ? error : null
+      error: process.env.NODE_ENV === 'development' ? error : null,
+      status: 500
     });
   }
 });
