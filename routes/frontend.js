@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
   try {
     res.render("index");
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load homepage" });
+    res.status(500).render("error", { error: "Failed to load homepage", status: 500 });
   }
 });
 
@@ -64,7 +64,7 @@ router.get("/about-us", async (req, res) => {
     });
   } catch (err) {
     console.error("About us error:", err);
-    res.status(500).render("error", { error: "Failed to load About Us page" });
+    res.status(500).render("error", { error: "Failed to load About Us page", status: 500 });
   }
 });
 
@@ -73,7 +73,7 @@ router.get("/contact-us", (req, res) => {
   try {
     res.render("contact-us");
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load Contact Us page" });
+    res.status(500).render("error", { error: "Failed to load Contact Us page", status: 500 });
   }
 });
 
@@ -100,7 +100,7 @@ router.get("/recipes", async (req, res) => {
       hasPrevPage: page > 1
     });
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load recipes" });
+    res.status(500).render("error", { error: "Failed to load recipes", status: 500 });
   }
 });
 
@@ -109,11 +109,11 @@ router.get("/recipe-details/:id", async (req, res) => {
   try {
     const recipe = await Recipes.findById(req.params.id).populate("author");
     if (!recipe) {
-      return res.status(404).render("error", { error: "Recipe not found" });
+      return res.status(404).render("error", { error: "Recipe not found", status: 404 });
     }
     res.render("recipe-details", { recipe });
   } catch (err) {
-    res.status(500).render("error", { error: "Failed to load recipe details" });
+    res.status(500).render("error", { error: "Failed to load recipe details", status: 500 });
   }
 });
 
@@ -132,7 +132,7 @@ router.get("/profile", verifyToken, async (req, res) => {
     res.render("user/profile", { recipes });
   } catch (error) {
     console.error("Profile error:", error);
-    res.status(500).render("error", { error: "Failed to load profile" });
+    res.status(500).render("error", { error: "Failed to load profile", status: 500 });
   }
 });
 
